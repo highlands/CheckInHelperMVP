@@ -345,6 +345,13 @@ select:focus-visible {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
+.composer-dock {
+  overflow: visible;
+  padding-top: 1.5rem;
+  /* Reserve room for the glass shadow so it is not clipped at the viewport edge. */
+  padding-bottom: max(2.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+}
+
 .composer-glass::before {
   content: "";
   pointer-events: none;

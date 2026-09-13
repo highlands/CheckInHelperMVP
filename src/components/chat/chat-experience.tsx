@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/input";
 import { MarkdownContent } from "@/components/chat/markdown-content";
 import type { CitationView } from "@/components/chat/citation-card";
 import { ComposerActionIcon } from "@/components/chat/composer-action-icon";
+import { useRateLimitDialog } from "@/components/use-rate-limit-dialog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -47,6 +48,7 @@ export function ChatExperience({
   const feedbackHideTimers = useRef<Record<string, number[]>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { handleRateLimitResponse, rateLimitDialog } = useRateLimitDialog();
 
   const hasInput = input.trim().length > 0;
 
@@ -132,8 +134,14 @@ export function ChatExperience({
 
       if (!response.ok || !response.body) {
         const payload = (await response.json().catch(() => null)) as
-          | { error?: string; traceId?: string }
+          | { error?: string; traceId?: string; code?: string; title?: string; message?: string }
           | null;
+
+        if (handleRateLimitResponse(response, payload)) {
+          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+          return;
+        }
+
         throw new Error(
           payload?.traceId
             ? `${payload.error ?? "Unable to reach the assistant."} Reference: ${payload.traceId}`
@@ -467,6 +475,7 @@ export function ChatExperience({
 
   const chatContent = (
     <>
+    {rateLimitDialog}
     <div
       className={cn(
         "h-full min-h-0 flex-1",
@@ -475,7 +484,7 @@ export function ChatExperience({
     >
       <section
         aria-label="Conversation"
-        className="relative flex h-full min-h-0 flex-col overflow-hidden"
+        className="relative flex h-full min-h-0 flex-col"
       >
         {!embedded ? (
           <div
@@ -492,7 +501,7 @@ export function ChatExperience({
 
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-28 md:px-0",
+            "flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-32 md:px-0",
             embedded ? "pt-4" : showEmptyState ? "pt-2" : "pt-4",
             !embedded && contentWidthClass,
           )}
@@ -503,7 +512,7 @@ export function ChatExperience({
         {/* Overlay dock so thread paints under the glass for backdrop-filter */}
         <div
           className={cn(
-            "pointer-events-none absolute inset-x-0 bottom-0 z-40 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 md:px-0",
+            "composer-dock pointer-events-none absolute inset-x-0 bottom-0 z-40 px-4 md:px-0",
             !embedded && contentWidthClass,
           )}
         >
@@ -516,7 +525,7 @@ export function ChatExperience({
 
   if (embedded) {
     return (
-      <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[var(--color-background)]">
+      <div className="flex h-full min-h-0 flex-col bg-[var(--color-background)]">
         {chatContent}
       </div>
     );

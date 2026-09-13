@@ -4,9 +4,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRateLimitDialog } from "@/components/use-rate-limit-dialog";
 
 export function SyncPanel() {
   const [loading, setLoading] = useState(false);
+  const { handleRateLimitResponse, rateLimitDialog } = useRateLimitDialog();
 
   async function triggerSync(options?: {
     dryRun?: boolean;
@@ -20,7 +22,9 @@ export function SyncPanel() {
     });
     const data = await response.json();
     if (!response.ok) {
-      toast.error(data.error ?? "Sync failed.");
+      if (!handleRateLimitResponse(response, data)) {
+        toast.error(data.error ?? "Sync failed.");
+      }
     } else {
       toast.success(
         `Sync ${data.status}. Added ${data.summary.added}, updated ${data.summary.updated}, unchanged ${data.summary.unchanged}, failed ${data.summary.failed}.`,
@@ -30,7 +34,9 @@ export function SyncPanel() {
   }
 
   return (
-    <Card>
+    <>
+      {rateLimitDialog}
+      <Card>
       <CardHeader>
         <CardTitle>Manual synchronization</CardTitle>
       </CardHeader>
@@ -54,5 +60,6 @@ export function SyncPanel() {
         </Button>
       </CardContent>
     </Card>
+    </>
   );
 }

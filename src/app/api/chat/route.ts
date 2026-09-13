@@ -9,6 +9,7 @@ import {
   CHAT_MAX_INPUT_LENGTH,
   sanitizeUserInput,
 } from "@/lib/security";
+import { createRateLimitResponse } from "@/lib/rate-limit";
 import { createRetrievalProvider } from "@/lib/assistant/mock-provider";
 import type { MappedCitation } from "@/lib/assistant/provider";
 
@@ -30,10 +31,7 @@ export async function POST(request: NextRequest) {
 
     const rate = checkRateLimit(`chat:${session.user.id}`, env.CHAT_RATE_LIMIT);
     if (!rate.allowed) {
-      return new Response(JSON.stringify({ error: "Rate limit exceeded." }), {
-        status: 429,
-        headers: { "Content-Type": "application/json" },
-      });
+      return createRateLimitResponse("chat", rate.retryAfterMs);
     }
 
     const body = chatSchema.parse(await request.json());

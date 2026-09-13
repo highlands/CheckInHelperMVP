@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useRateLimitDialog } from "@/components/use-rate-limit-dialog";
 import { formatDateTime } from "@/lib/utils";
 
 export function SourcesManager({
@@ -18,6 +19,7 @@ export function SourcesManager({
   const [pageIdOrUrl, setPageIdOrUrl] = useState("");
   const [category, setCategory] = useState("general");
   const [loading, setLoading] = useState(false);
+  const { handleRateLimitResponse, rateLimitDialog } = useRateLimitDialog();
 
   async function refreshSources() {
     const response = await fetch("/api/admin/sources");
@@ -69,7 +71,7 @@ export function SourcesManager({
     const data = await response.json();
     if (response.ok) {
       toast.success(`Sync finished with status ${data.status}.`);
-    } else {
+    } else if (!handleRateLimitResponse(response, data)) {
       toast.error(data.error ?? "Sync failed.");
     }
     await refreshSources();
@@ -82,7 +84,9 @@ export function SourcesManager({
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      {rateLimitDialog}
+      <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Add Confluence source</CardTitle>
@@ -193,5 +197,6 @@ export function SourcesManager({
         )}
       </div>
     </div>
+    </>
   );
 }

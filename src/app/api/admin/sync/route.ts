@@ -3,6 +3,10 @@ import { requireAdmin } from "@/lib/auth";
 import { getEnv } from "@/lib/env";
 import { runSynchronization } from "@/lib/sync/service";
 import { checkRateLimit, verifyCronSecret } from "@/lib/security";
+import {
+  buildRateLimitPayload,
+  rateLimitResponseHeaders,
+} from "@/lib/rate-limit";
 import { AuditEventType, createId, dbError, getDb, SyncTriggerType } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
@@ -12,10 +16,11 @@ export async function POST(request: NextRequest) {
 
     const rate = checkRateLimit(`sync:${session.user.id}`, env.SYNC_RATE_LIMIT);
     if (!rate.allowed) {
-      return NextResponse.json(
-        { error: "Rate limit exceeded." },
-        { status: 429 },
-      );
+      const payload = buildRateLimitPayload("sync", rate.retryAfterMs);
+      return NextResponse.json(payload, {
+        status: 429,
+        headers: rateLimitResponseHeaders(payload.retryAfterSeconds),
+      });
     }
 
     const body = (await request.json().catch(() => ({}))) as {
