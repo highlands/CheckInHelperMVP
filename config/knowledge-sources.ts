@@ -16,4 +16,8 @@ export const KNOWLEDGE_SOURCES: KnowledgeSourceSeed[] = [
       "https://churchofthehighlands.atlassian.net/wiki/external/OTQ3MzQ4OWQyODc4NDA4ZDkwOGQxODI3YjVmYzNiZWQ",
     category: "Rock",
   },
+  {
+    pageIdOrUrl:
+      "https://churchofthehighlands.atlassian.net/wiki/external/YWZjODA0ZjVlMWQ0NGM4NmEyZjdjNmIwYjUwMjVkMGY",
+  },
 ];
