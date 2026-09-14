@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
+  ArrowUpRight,
   Check,
   Loader2,
   ThumbsDown,
@@ -278,14 +279,19 @@ export function ChatExperience({
   const thread = (
     <>
       {showEmptyState ? (
-        <div className="flex flex-1 flex-col justify-center">
-          <div className="gradient-panel rounded-[1.75rem] p-8 text-white shadow-[var(--shadow-soft)] md:p-10">
-            <h3 className="text-4xl font-bold md:text-5xl">How can I help?</h3>
-            <div className="mt-8 grid gap-3 md:grid-cols-2">
+        <div className="mt-auto w-full pb-2">
+          <div className="gradient-panel rounded-[1.75rem] p-6 shadow-[var(--shadow-soft)] md:p-8">
+            <h3 className="text-3xl font-bold tracking-tight text-[#0B2749] md:text-4xl dark:text-[var(--color-foreground)]">
+              How can I help?
+            </h3>
+            <p className="mt-2 max-w-xl text-sm text-[var(--color-muted)]">
+              Pick a starter question or type your own below.
+            </p>
+            <div className="mt-5 grid auto-rows-fr gap-3 sm:grid-cols-2">
               {SUGGESTED_PROMPTS.map((prompt, index) => (
                 <div
                   key={prompt}
-                  className="suggested-prompt-enter"
+                  className="suggested-prompt-enter h-full"
                   style={
                     {
                       "--stagger-index": index,
@@ -295,9 +301,15 @@ export function ChatExperience({
                   <button
                     type="button"
                     onClick={() => sendMessage(prompt)}
-                    className="pressable w-full rounded-2xl bg-white/15 p-4 text-left text-sm font-medium backdrop-blur transition-[background-color,transform] duration-[160ms] ease-out hover-fine:bg-white/25"
+                    className="pressable suggested-prompt-card group flex h-full min-h-[5.25rem] w-full items-center gap-3 rounded-2xl p-4 text-left transition-[background-color,border-color,box-shadow,transform] duration-[160ms] ease-out"
                   >
-                    {prompt}
+                    <span className="flex-1 text-sm leading-snug font-semibold">
+                      {prompt}
+                    </span>
+                    <ArrowUpRight
+                      className="h-4 w-4 shrink-0 text-[var(--color-blue)] opacity-80 transition-transform duration-[160ms] ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                      aria-hidden="true"
+                    />
                   </button>
                 </div>
               ))}
@@ -501,8 +513,8 @@ export function ChatExperience({
 
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-32 md:px-0",
-            embedded ? "pt-4" : showEmptyState ? "pt-2" : "pt-4",
+            "flex min-h-0 flex-1 flex-col overflow-y-auto px-4 md:px-0",
+            showEmptyState ? "pb-28 pt-4" : "pb-32 pt-4",
             !embedded && contentWidthClass,
           )}
         >

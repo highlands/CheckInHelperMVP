@@ -48,12 +48,12 @@
 :root {
   color-scheme: light;
   --gradient-brand: linear-gradient(
-    145deg,
-    #02392d 0%,
-    #297f6f 38%,
-    #bae0d1 68%,
-    #ffe183 100%
+    165deg,
+    #c5ddf0 0%,
+    #d4e8f8 48%,
+    #e8f3fe 100%
   );
+  --gradient-welcome: var(--gradient-brand);
 }
 
 .dark {
@@ -87,12 +87,12 @@
   --color-prose-pre-text: #eef2f5;
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
   --gradient-brand: linear-gradient(
-    145deg,
-    #012820 0%,
-    #1f5c50 42%,
-    #3d8a78 72%,
-    #c9a832 100%
+    165deg,
+    #0f2433 0%,
+    #152a3d 50%,
+    #1a3350 100%
   );
+  --gradient-welcome: var(--gradient-brand);
 }
 
 * {
@@ -265,7 +265,42 @@ select:focus-visible {
 }
 
 .gradient-panel {
-  background: var(--gradient-brand);
+  background: var(--gradient-welcome);
+  border: 1px solid rgba(11, 81, 122, 0.12);
+}
+
+.suggested-prompt-card {
+  border: 1px solid rgba(11, 81, 122, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 1px 2px rgba(11, 39, 73, 0.06),
+    0 4px 12px rgba(11, 81, 122, 0.1);
+  color: #0b2749;
+}
+
+.suggested-prompt-card:hover {
+  border-color: rgba(67, 145, 206, 0.55);
+  background: #ffffff;
+  box-shadow:
+    0 2px 4px rgba(11, 39, 73, 0.08),
+    0 8px 20px rgba(11, 81, 122, 0.14);
+}
+
+.suggested-prompt-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.dark .suggested-prompt-card {
+  border-color: var(--color-border);
+  background: rgba(21, 32, 40, 0.92);
+  color: var(--color-foreground);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.dark .suggested-prompt-card:hover {
+  border-color: var(--color-blue);
+  background: var(--color-surface);
 }
 
 .message-enter {
